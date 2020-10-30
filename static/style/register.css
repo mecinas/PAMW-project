@@ -1,9 +1,9 @@
-body {  min-width:1000px; }
-
 html {
     position: relative;
     background-color: khaki;
+    resize: none;
 }
+
 
 .nav_bar ul {
     list-style-type: none;
@@ -35,12 +35,12 @@ html {
 }
 
 .registration_div {
-    position: absolute;
+    position: sticky;
     width: 1150px;
     height: 400px;
     top: 50%;
     left: 20%;
-    margin: 200px 0 0 -150px;
+    margin: 200px 0 0 -50px;
 }
 
 .registration_div h2 {
