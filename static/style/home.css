@@ -1,6 +1,7 @@
 html {
     min-width: 550px;
     position: relative;
+    background-color: khaki;
 }
 
 .nav_bar ul {
