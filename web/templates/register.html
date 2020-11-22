@@ -1,72 +1,48 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-    <title>Rejestracja</title>
-    <!-- <script src="/static/codeJS/register.js" defer></script> -->
-    <link rel="stylesheet" href="/static/style/register.css">
-</head>
+{% block head %}
+<title>Rejestracja</title>
+<!-- <script src="/static/codeJS/register.js" defer></script> -->
+<link rel="stylesheet" href="/static/style/register.css">
+{% endblock %}
 
-<body>
-    <nav class="nav_bar">
+{% block content %}
+<div class="registration_div">
+    <h2>
+        Zerejestruj się już dziś, a otrzymasz darmowy voucher w wysokości 20 zł na pierwsze przesyłki.
+    </h2>
+    <form class="registration_table" method="POST" action="/sender/register" enctype="multipart/form-data">
         <ul>
-            <li><a href="/">Strona główna</a></li>
-            <li><a href="/sender/register">Zarajestruj się</a></li>
-            <li><a href="/sender/login">Zaloguj się</a></li>
+            <li>
+                <input id="name_input" type="text" name="firstname" placeholder="Imię">
+            </li>
+
+            <li>
+                <input id="lastname_input" type="text" name="lastname" placeholder="Nazwisko">
+            </li>
+            <li>
+                <input id="email_input" type="text" name="email" placeholder="E-mail">
+            </li>
+            <li>
+                <input id="adress_input" type="text" name="adress" placeholder="Adres">
+            </li>
+
+            <li>
+                <input id="login_input" type="text" name="login" placeholder="Login">
+            </li>
+
+            <li>
+                <input id="password_input" type="password" name="password" placeholder="Hasło">
+            </li>
+
+            <li>
+                <input id="password2_input" type="password" name="sec_password" placeholder="Powtórz hasło">
+            </li>
+
+            <li><input id="submit_button" type="submit" value="Zarajestruj"></input></li>
+
         </ul>
-    </nav>
+    </form>
+</div>
 
-    <div class="registration_div">
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <ul class=flashes>
-            {% for message in messages %}
-            <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-        {% endwith %}
-        <h2>
-            Zerejestruj się już dziś, a otrzymasz darmowy voucher w wysokości 20 zł na pierwsze przesyłki.
-        </h2>
-        <form class="registration_table" method="POST" action="/sender/register" enctype="multipart/form-data">
-            <ul>
-                <li>
-                    <input id="name_input" type="text" name="firstname" placeholder="Imię">
-                </li>
-
-                <li>
-                    <input id="lastname_input" type="text" name="lastname" placeholder="Nazwisko">
-                </li>
-                <li>
-                    <input id="email_input" type="text" name="email" placeholder="E-mail">
-                </li>
-                <li>
-                    <input id="adress_input" type="text" name="adress" placeholder="Adres">
-                </li>
-
-                <li>
-                    <input id="login_input" type="text" name="login" placeholder="Login">
-                </li>
-
-                <li>
-                    <input id="password_input" type="password" name="password" placeholder="Hasło">
-                </li>
-
-                <li>
-                    <input id="password2_input" type="password" name="sec_password" placeholder="Powtórz hasło">
-                </li>
-
-                <li><input id="submit_button" type="submit" value="Zarajestruj"></input></li>
-
-            </ul>
-        </form>
-    </div>
-
-
-
-    </div>
-
-</body>
-
-</html>
+{% endblock %}

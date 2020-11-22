@@ -1,0 +1,47 @@
+html{
+    background-color: khaki;
+}
+
+.nav_bar ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
+.nav_bar li {
+    margin: 0;
+    float: left;
+}
+
+.nav_bar li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+.nav_bar li a:hover {
+    background-color: #111;
+}
+
+.site-footer {
+    text-align: center;
+    position: absolute;
+    bottom: 0px;
+    right: 45%;
+}
+
+.site-footer a {
+    color: hotpink;
+}
+
+.site-footer a:hover {
+    color: #b803ff;
+}

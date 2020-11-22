@@ -40,6 +40,14 @@ def is_login(login):
     return db.hexists(f"user:{login}", "password")
 
 
+def verify_user(login, password):
+    password_encoded = password.encode()
+    hashed_password_database = db.hget(f"user:{login}", "password")
+    if not hashed_password_database:
+        return False
+    return checkpw(password_encoded, hashed_password_database)
+
+
 def save_user(firstname, lastname, email, adress, login, password):
     salt = gensalt(5)
     password_encoded = password.encode()
@@ -91,15 +99,33 @@ def register():
                           login, password, sec_password)
 
 
-@app.route("/sender/login")
+@app.route("/sender/login", methods=['GET'])
 def open_login():
     return render_template("login.html")
+
+
+@app.route("/sender/login", methods=['POST'])
+def login():
+    login = request.form.get("login")
+    password = request.form.get("password")
+
+    if not verify_user(login, password):
+        flash("Podano nieprawidłowy login lub hasło")
+        return render_template("login.html")
+        
+    flash("Zalogowano!")
+    return render_template("home.html")
 
 
 @app.route("/sender/logout", methods=['GET'])
 def open_logout():
     session.clear()
+    flash("Wylogowano!")
     return render_template("home.html")
+
+@app.route("/sender/layout", methods=['GET'])
+def open_layout():
+    return render_template("layout.html")
 
 
 if __name__ == '__main__':
