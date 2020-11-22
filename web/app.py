@@ -4,11 +4,16 @@ from redis import Redis
 from os import getenv
 from dotenv import load_dotenv
 from bcrypt import hashpw, gensalt, checkpw
+from datetime import datetime
 
 db = Redis(host='redis', port='6379', db=0)
 load_dotenv()
-SESSION_TYPE = 'redis'
+SESSION_TYPE = 'filesystem'
 SESSION_REDIS = db
+SESSION_COOKIE_SECURE = True
+REMEMBER_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY=True
+REMEMBER_COOKIE_HTTPONLY = True
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.secret_key = getenv('SECRET_KEY')
@@ -80,6 +85,7 @@ def validate_input(firstname, lastname, email, adress, login, password, sec_pass
             flash("Podany login już istnieje!")
             return redirect(url_for('open_register'))
         save_user(firstname, lastname, email, adress, login, password)
+        flash("Poprawnie zarejestrowano!")
         return redirect(url_for('open_login'))
 
     return redirect(url_for('open_register'))
@@ -114,19 +120,19 @@ def login():
         return render_template("login.html")
         
     flash("Zalogowano!")
-    return render_template("home.html")
+    session[login] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    return render_template("login.html")
 
 
 @app.route("/sender/logout", methods=['GET'])
 def open_logout():
     session.clear()
     flash("Wylogowano!")
-    return render_template("home.html")
+    return render_template("login.html")
 
-@app.route("/sender/layout", methods=['GET'])
-def open_layout():
-    return render_template("layout.html")
-
+@app.route("/sender/dashboard")
+def open_dashboard():
+    return render_template("dashboard.html")
 
 if __name__ == '__main__':
     app.run()

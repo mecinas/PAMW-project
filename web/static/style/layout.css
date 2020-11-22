@@ -14,10 +14,16 @@ html{
     width: 100%;
 }
 
-.nav_bar li {
+.left_align {
     margin: 0;
     float: left;
 }
+
+.right_align {
+    margin: 0;
+    float: right;
+}
+
 
 .nav_bar li a {
     display: block;
@@ -30,6 +36,15 @@ html{
 .nav_bar li a:hover {
     background-color: #111;
 }
+
+.flashes{
+    list-style-type: none;
+    position: absolute;
+    text-align: center;
+    right: 43%;
+    top: 40px;
+}
+
 
 .site-footer {
     text-align: center;
