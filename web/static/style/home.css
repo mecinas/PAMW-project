@@ -21,9 +21,14 @@ body {
     width: 100%;
 }
 
-.nav_bar li {
+.left_align {
     margin: 0;
     float: left;
+}
+
+.right_align {
+    margin: 0;
+    float: right;
 }
 
 .nav_bar li a {

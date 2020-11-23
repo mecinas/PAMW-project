@@ -4,4 +4,5 @@ python-dotenv
 redis
 gunicorn
 bcrypt
-jwt
+pyjwt
+uuid

@@ -1,24 +1,44 @@
-from flask import Flask, request, make_response, session, render_template, flash, url_for
+from flask import Flask, request, make_response, session, render_template, flash, url_for, g
 from flask_session import Session
 from redis import Redis
 from os import getenv
 from dotenv import load_dotenv
 from bcrypt import hashpw, gensalt, checkpw
 from datetime import datetime
+from jwt import encode, decode
+from uuid import uuid4
+import json
 
 db = Redis(host='redis', port='6379', db=0)
 load_dotenv()
 SESSION_TYPE = 'filesystem'
 SESSION_REDIS = db
-SESSION_COOKIE_SECURE = True
-REMEMBER_COOKIE_SECURE = True
-SESSION_COOKIE_HTTPONLY=True
+# SESSION_COOKIE_SECURE = True
+# REMEMBER_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
 REMEMBER_COOKIE_HTTPONLY = True
+JWT_SECRET = getenv("JWT_SECRET")
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.secret_key = getenv('SECRET_KEY')
 app.debug = False
 ses = Session(app)
+
+
+def generate_token(package, user):
+    payload = {
+        "iss": "pacztex auth server",
+        "sub": package,
+        "usr": user,
+        "aud": "pacztex dashboard service"
+    }
+    token = encode(payload, JWT_SECRET, algorithm="HS256")
+    return token
+
+
+@app.before_request
+def get_logged_login():
+    g.login = session.get("login")
 
 
 def is_user(username):
@@ -118,8 +138,9 @@ def login():
     if not verify_user(login, password):
         flash("Podano nieprawidłowy login lub hasło")
         return render_template("login.html")
-        
+
     flash("Zalogowano!")
+    session["login"] = login
     session[login] = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
     return render_template("login.html")
 
@@ -130,9 +151,53 @@ def open_logout():
     flash("Wylogowano!")
     return render_template("login.html")
 
-@app.route("/sender/dashboard")
+
+@app.route("/sender/dashboard", methods=['GET'])
 def open_dashboard():
-    return render_template("dashboard.html")
+    login = g.login
+    if login is None:
+        return "Brak dostępu, aby przejść do tego panelu należy uprzednio się zalogować", 401
+
+    packages = db.hget(f"user:{login}", "packages")
+    if packages is None:
+        return render_template("dashboard.html", login=login, has_packages=False)
+
+    packages = json.loads(packages)
+    return render_template("dashboard.html", login=login, packages=packages, has_packages=True)
+
+
+@app.route("/sender/dashboard", methods=['POST'])
+def add_package():
+    adressee_name = request.form.get("adressee_name")
+    storeroom_id = request.form.get("storeroom_id")
+    size = request.form.get("size")
+    package = {
+        str(uuid4()):
+        {'adressee_name': adressee_name,
+         "storeroom_id": storeroom_id,
+         "size": size}
+    }
+    login = g.login
+
+    packages = db.hget(f"user:{login}", "packages")
+    if packages is None:
+        package = json.dumps(package)
+        db.hset(f"user:{login}", "packages", package)
+        return open_dashboard()
+
+    packages = json.loads(packages)
+    new_packages = {**packages, **package}
+    new_packages = json.dumps(new_packages)
+    db.hset(f"user:{login}", "packages", new_packages)
+    return open_dashboard()
+
+@app.route("/sender/dashboard", methods=['DELETE'])
+def add_packages():
+    login = g.login
+    db.hset("user:{login}", "packages", None)
+    return open_dashboard()
+#Naprawienie usuwania elementu
+#Dodawanie paczki do pustego użytkownika
 
 if __name__ == '__main__':
     app.run()

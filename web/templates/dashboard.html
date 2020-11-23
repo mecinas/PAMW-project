@@ -7,4 +7,33 @@
 
 {% block content %}
 
+<div class="content_div">
+    <h2>Dodaj paczkę</h2>
+    <form class="add_package" method="POST" action="/sender/dashboard">
+        <ul>
+            <li><input type="text" name="adressee_name" placeholder="Nazwa adresata"></input></li>
+            <li><input type="text" name="storeroom_id" placeholder="Id skrytki docelowej"></input></li>
+            <li><input type="text" name="size" placeholder="Rozmiar paczki"></input></li>
+            <li><input type="submit" value="Dodaj paczkę"></input></li>
+
+        </ul>
+    </form>
+    <h2>Przypisane etykiety paczek dla: {{login}}</h2>
+    {% if has_packages %}
+    <ul>
+        {% for key, value in packages.items() %}
+            <li>Nazwa adresata: {{value.adressee_name}}, ID skrytki docelowej: {{value.storeroom_id}}, rozmiar paczki: {{value.size}}</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>Brak zarejestrowanych paczek</p>
+    {% endif %}
+    <form class="add_package" method="DELETE" action="/sender/dashboard">
+        <ul>
+            <li><input type="submit" value="Wyczyść listę"></input></li>
+        </ul>
+    </form>
+
+
+</div>
 {% endblock %}
