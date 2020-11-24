@@ -28,9 +28,9 @@
     {% else %}
     <p>Brak zarejestrowanych paczek</p>
     {% endif %}
-    <form class="add_package" method="DELETE" action="/sender/dashboard">
+    <form class="add_package" method="POST" action="/sender/dashboard/delete">
         <ul>
-            <li><input type="submit" value="Wyczyść listę"></input></li>
+            <li><input type="submit" name="del_button" value="Wyczyść listę"></input></li>
         </ul>
     </form>
 

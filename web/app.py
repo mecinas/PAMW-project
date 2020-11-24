@@ -24,18 +24,6 @@ app.secret_key = getenv('SECRET_KEY')
 app.debug = False
 ses = Session(app)
 
-
-def generate_token(package, user):
-    payload = {
-        "iss": "pacztex auth server",
-        "sub": package,
-        "usr": user,
-        "aud": "pacztex dashboard service"
-    }
-    token = encode(payload, JWT_SECRET, algorithm="HS256")
-    return token
-
-
 @app.before_request
 def get_logged_login():
     g.login = session.get("login")
@@ -191,13 +179,11 @@ def add_package():
     db.hset(f"user:{login}", "packages", new_packages)
     return open_dashboard()
 
-@app.route("/sender/dashboard", methods=['DELETE'])
+@app.route("/sender/dashboard/delete", methods=['POST'])
 def add_packages():
     login = g.login
-    db.hset("user:{login}", "packages", None)
+    db.hdel(f"user:{login}", "packages")
     return open_dashboard()
-#Naprawienie usuwania elementu
-#Dodawanie paczki do pustego użytkownika
 
 if __name__ == '__main__':
     app.run()

@@ -1,6 +1,6 @@
 @import "layout.css";
 
-.registration_div {
+.login_div {
     position: sticky;
     width: 1150px;
     height: 400px;
@@ -8,11 +8,11 @@
     margin: 200px 0 0 -50px;
 }
 
-.registration_div h2 {
+.login_div h2 {
     text-align: center;
 }
 
-.registration_div ul {
+.login_div ul {
     list-style-type: none;
     text-align: center;
 }
