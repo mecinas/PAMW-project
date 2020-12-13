@@ -6,3 +6,4 @@ gunicorn
 bcrypt
 pyjwt
 uuid
+requests
