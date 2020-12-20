@@ -22,7 +22,7 @@
     {% if has_packages %}
     <ul>
         {% for key, value in packages.items() %}
-            <li>Nazwa adresata: {{value.adressee_name}}, ID skrytki docelowej: {{value.storeroom_id}}, rozmiar paczki: {{value.size}}</li>
+            <li>Nazwa adresata: {{value.adressee_name}}, ID skrytki docelowej: {{value.storeroom_id}}, rozmiar paczki: {{value.size}}, status paczki: {{value.state}}</li>
         {% endfor %}
     </ul>
     {% else %}

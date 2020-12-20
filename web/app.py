@@ -119,7 +119,10 @@ def add_package():
         str(uuid4()):
         {'adressee_name': adressee_name,
          "storeroom_id": storeroom_id,
-         "size": size}
+         "size": size,
+         "state": "Nadana"
+         
+         }
     }
     json = {
         "package": package,
