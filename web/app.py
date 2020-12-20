@@ -1,21 +1,16 @@
-from flask import Flask, request, make_response, render_template, flash, url_for, g
+from flask import Flask, request, make_response, render_template, flash
 import requests
-from redis import Redis
 from os import getenv
 from dotenv import load_dotenv
-from bcrypt import hashpw, gensalt, checkpw
 from datetime import datetime
-from jwt import encode, decode
 from uuid import uuid4
 import json
 
-db = Redis(host='redis', port='6379', db=0)
 load_dotenv()
 SESSION_TYPE = 'filesystem'
-SESSION_REDIS = db
 SESSION_COOKIE_HTTPONLY = True
 REMEMBER_COOKIE_HTTPONLY = True
-JWT_SECRET = getenv("JWT_SECRET")
+
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.secret_key = getenv('SECRET_KEY')
@@ -143,4 +138,4 @@ def add_packages():
     return open_dashboard()
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host="0.0.0.0", port=8000)
