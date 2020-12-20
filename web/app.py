@@ -19,6 +19,8 @@ WEB_SEVICE_URL = "https://murmuring-springs-10121.herokuapp.com"
 
 def get_respond_render(url, html_resource, cookie=None):
     api_response = requests.get(url)
+    if(api_response.status_code >= 400):
+        return make_response('Błąd w połączeniu z serwerem', 500)
     api_response_data = json.loads(api_response.content)
     client_response = make_response(render_template(html_resource))
     client_response.headers.set('links', api_response_data["links"])
@@ -45,14 +47,21 @@ def open_login():
 def open_dashboard():
     url = WEB_SEVICE_URL + "/root/sender/dashboard"
 
-    api_response = requests.get(url, json=request.cookies.get('auth'))
+    cookie = {"cookie": request.cookies.get('auth')}
+    api_response = requests.get(url, headers=cookie)
+    if(api_response.status_code >= 400):
+        return make_response('Błąd w połączeniu z serwerem', 500)
     api_response_data = json.loads(api_response.content)
     return render_dashboard(api_response_data["data"], api_response_data["links"], "dashboard.html", request.cookies.get('auth'))
 
 @app.route("/sender/logout", methods=['GET'])
 def open_logout():
     url = WEB_SEVICE_URL + "/root/sender/login"
+
     api_response = requests.get(url)
+    if(api_response.status_code >= 400):
+        return make_response('Błąd w połączeniu z serwerem', 500)
+
     api_response_data = json.loads(api_response.content)
     client_response = make_response(render_template("login.html"))
     client_response.headers.set('links', api_response_data["links"])
@@ -74,6 +83,9 @@ def register():
 
     url = WEB_SEVICE_URL + "/root/sender/register"
     api_response = requests.post(url, json=data)
+    if(api_response.status_code >= 400):
+        return make_response('Błąd w połączeniu z serwerem', 500)
+
     api_data = json.loads(api_response.content)
     for message in api_data["data"]["messages"]:
         flash(message)
@@ -87,6 +99,9 @@ def login():
     }
     url = WEB_SEVICE_URL + "/root/sender/login"
     api_response = requests.post(url, json=data)
+    if(api_response.status_code >= 400):
+        return make_response('Błąd w połączeniu z serwerem', 500)
+
     api_data = json.loads(api_response.content)
     api_cookie = bytes(api_data["data"]["cookies"], 'utf-8')
 
@@ -120,11 +135,13 @@ def add_package():
          }
     }
     json = {
-        "package": package,
-        "cookie": request.cookies.get('auth')
+        "package": package
     }
+    cookie = {"cookie": request.cookies.get('auth')}
     url = WEB_SEVICE_URL + "/root/sender/dashboard"
-    requests.post(url=url, json=json)
+    api_response = requests.post(url=url, headers=cookie, json=json)
+    if(api_response.status_code >= 400):
+        return make_response('Błąd w połączeniu z serwerem', 500)
 
     return open_dashboard()
 
@@ -132,8 +149,10 @@ def add_package():
 def add_packages():
     
     url = WEB_SEVICE_URL + "/root/sender/dashboard"
-    cookie = request.cookies.get('auth')
-    requests.delete(url=url, json=cookie)
+    cookie = {"cookie": request.cookies.get('auth')}
+    api_response = requests.delete(url=url, headers=cookie)
+    if(api_response.status_code >= 400):
+        return make_response('Błąd w połączeniu z serwerem', 500)
 
     return open_dashboard()
 

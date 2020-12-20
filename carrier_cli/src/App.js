@@ -3,9 +3,6 @@ import axios from 'axios';
 import DropdownEl from './elements/DropdownEl';
 import { Table } from 'reactstrap';
 import jwt from 'jsonwebtoken';
-//TODO
-//Stworzenie POST zmiana statusu paczki
-//Uporządkowanie .env tylko tam gdzie jest potrzebne
 
 export default class App extends PureComponent {
   is_authorized = true
@@ -21,13 +18,17 @@ export default class App extends PureComponent {
     return token
   }
   token = this.createToken()
-
+  server_error = false
 
   downloadPackages() {
     let path = 'https://murmuring-springs-10121.herokuapp.com/root/carrier/dashboard'
     axios.get(path, {
-      params: {
-        "cookie": this.token
+      headers:{
+        "auth_cookie": this.token
+      }
+    }).catch(function (error) {
+      if (error.response) {
+        this.server_error = true
       }
     }).then(resp => {
       if (resp.data.data.is_authorized)
@@ -35,6 +36,7 @@ export default class App extends PureComponent {
       else
         this.is_authorized = false
     })
+    this.server_error = false
   }
 
   send_post_request = (state, index_of_row, username) => {
@@ -43,22 +45,32 @@ export default class App extends PureComponent {
       params: {
         "user": username,
         "index_of_row": index_of_row,
-        "cookie": this.token,
         "state": state
+      },
+      headers:{
+        "auth_cookie": this.token
       }
-    })
+    }).catch(function (error) {
+      if (error.response) {
+        this.server_error = true
+      }
+    });
+    this.server_error = false
   }
 
   render() {
     if (!this.is_authorized) {
-      return <p>Brak dostępu, 404</p>
+      return 'Błędna autoryzacja, 401'
     }
     else {
       this.downloadPackages()
+      if (this.server_error){
+        return 'Problem w połączeniu w serwerem, 500'
+      }
       let start_packages = this.state.all_packages
       let packages = start_packages.map((single_package) => {
         return (
-          <tr>
+          <tr key={single_package.id}>
             <td>{single_package.sender_name}</td>
             <td>{single_package.adressee_name}</td>
             <td>{single_package.storeroom_id}</td>
