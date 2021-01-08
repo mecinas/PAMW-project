@@ -31,8 +31,9 @@ export default class App extends PureComponent {
         this.server_error = true
       }
     }).then(resp => {
-      if (resp.data.data.is_authorized)
+      if (resp.data.data.is_authorized){
         this.setState({ "all_packages": resp.data.data.all_packages })
+      }
       else
         this.is_authorized = false
     })

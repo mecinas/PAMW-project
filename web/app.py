@@ -6,6 +6,8 @@ from datetime import datetime
 from uuid import uuid4
 import json
 
+#Kurier zmiana paczki redis
+
 load_dotenv()
 SESSION_TYPE = 'filesystem'
 SESSION_COOKIE_HTTPONLY = True
@@ -25,7 +27,7 @@ def get_respond_render(url, html_resource, cookie=None):
     client_response = make_response(render_template(html_resource))
     client_response.headers.set('links', api_response_data["links"])
     if cookie is not None:
-        client_response.set_cookie('auth', cookie, max_age=20)
+        client_response.set_cookie('auth', cookie, max_age=200)
     return client_response
 
 @app.route('/', methods=['GET'])
@@ -43,6 +45,42 @@ def open_login():
     url = WEB_SEVICE_URL + "/root/sender/login"
     return get_respond_render(url, "login.html")
 
+def get_authorized_render(url, html_resource, cookie, resources={}):
+    api_response = requests.get(url=url, headers=cookie)
+
+    if(api_response.status_code >= 400):
+        return make_response('Błąd w połączeniu z serwerem', 500)
+    api_response_data = json.loads(api_response.content)
+    if not api_response_data.get("data").get("is_authorized"):
+        return "Brak dostępu, aby przejść do tego panelu należy uprzednio się zalogować", 401
+
+    client_response = make_response(render_template(html_resource, **resources))
+    client_response.headers.set('links', api_response_data.get("links"))
+    client_response.set_cookie('auth', cookie.get("cookie"), max_age=200)
+    return client_response
+
+@app.route("/sedner/notifications", methods=['GET'])
+def open_notifications():
+    url = WEB_SEVICE_URL + "/root/sender/notifications"
+    cookie = {"cookie": request.cookies.get('auth')}
+
+    return get_authorized_render(url, "notifications.html", cookie)
+
+@app.route("/sender/notifications/update", methods=['GET'])
+def update_notifications():
+    url = WEB_SEVICE_URL + "/root/sender/notifications/update"
+    cookie = {"cookie": request.cookies.get('auth')}
+    api_response = requests.get(url=url, headers=cookie)
+
+    if(api_response.status_code >= 400):
+        return make_response('Błąd w połączeniu z serwerem', 500)
+    api_response_data = json.loads(api_response.content).get("data")
+    if not api_response_data.get("is_authorized"):
+        return "Brak dostępu, aby przejść do tego panelu należy uprzednio się zalogować", 401
+    print(api_response_data)
+    return {"notification":api_response_data.get("notification")}
+
+
 @app.route("/sender/dashboard", methods=['GET'])
 def open_dashboard():
     url = WEB_SEVICE_URL + "/root/sender/dashboard"
@@ -51,8 +89,13 @@ def open_dashboard():
     api_response = requests.get(url, headers=cookie)
     if(api_response.status_code >= 400):
         return make_response('Błąd w połączeniu z serwerem', 500)
-    api_response_data = json.loads(api_response.content)
-    return render_dashboard(api_response_data["data"], api_response_data["links"], "dashboard.html", request.cookies.get('auth'))
+    api_response_data = json.loads(api_response.content).get("data")
+    resources = {
+        "login": api_response_data["login"],
+        "packages": api_response_data["packages"],
+        "has_packages": api_response_data["has_packages"]
+    }
+    return get_authorized_render(url, "dashboard.html", cookie, resources)
 
 @app.route("/sender/logout", methods=['GET'])
 def open_logout():
@@ -106,19 +149,6 @@ def login():
     api_cookie = bytes(api_data["data"]["cookies"], 'utf-8')
 
     return get_respond_render(url, "login.html", cookie = api_cookie)
-
-def render_dashboard(api_response_data, links, html_resource, cookie):
-    if not api_response_data["is_authorized"]:
-        return "Brak dostępu, aby przejść do tego panelu należy uprzednio się zalogować", 401
-    if not api_response_data["has_packages"]:
-        client_response = make_response(render_template("dashboard.html",
-             login=api_response_data["login"], has_packages=False))
-    else:
-        client_response = make_response(render_template("dashboard.html",
-             login=api_response_data["login"], packages=api_response_data["packages"], has_packages=True))
-    client_response.headers.set('links', links)
-    client_response.set_cookie('auth', cookie, max_age=20)
-    return client_response
 
 @app.route("/sender/dashboard", methods=['POST'])
 def add_package():
