@@ -1,11 +1,9 @@
 
 //Mój własny sleep
 // const sleep = ms => new Promise(res => setTimeout(res, ms))
-const startString = "Zmiana statusu paczki: "
-const endString = " na status: "
 loadNotifications();
 
-async function loadNotifications() {
+function loadNotifications() {
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function () {
         var DONE = 4;
