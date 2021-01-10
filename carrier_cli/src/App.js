@@ -12,7 +12,7 @@ export default class App extends PureComponent {
   createToken() {
     let key = process.env.REACT_APP_JWT_SECRET;
     let payload = {
-      "permission_as": "carrier"
+      "login": global.account
     }
     let token = jwt.sign(payload, key)
     return token
@@ -23,7 +23,7 @@ export default class App extends PureComponent {
   downloadPackages() {
     let path = 'https://murmuring-springs-10121.herokuapp.com/root/carrier/dashboard'
     axios.get(path, {
-      headers:{
+      headers: {
         "auth_cookie": this.token
       }
     }).catch(function (error) {
@@ -31,7 +31,7 @@ export default class App extends PureComponent {
         this.server_error = true
       }
     }).then(resp => {
-      if (resp.data.data.is_authorized){
+      if (resp.data.data.is_authorized) {
         this.setState({ "all_packages": resp.data.data.all_packages })
       }
       else
@@ -48,7 +48,7 @@ export default class App extends PureComponent {
         "index_of_row": index_of_row,
         "state": state
       },
-      headers:{
+      headers: {
         "auth_cookie": this.token
       }
     }).catch(function (error) {
@@ -65,7 +65,7 @@ export default class App extends PureComponent {
     }
     else {
       this.downloadPackages()
-      if (this.server_error){
+      if (this.server_error) {
         return 'Problem w połączeniu w serwerem, 500'
       }
       let start_packages = this.state.all_packages
@@ -79,30 +79,39 @@ export default class App extends PureComponent {
             <td>{single_package.state}</td>
             <td>
               <DropdownEl send_post_request={this.send_post_request} index_of_row={single_package.id}
-               username={single_package.sender_name}/>
+                username={single_package.sender_name} />
             </td>
           </tr>
         )
       });
-      return (
-        <div className="content_container">
-          <Table>
-            <thead>
-              <tr>
-                <th>Nazwa nadawcy</th>
-                <th>Nazwa adresata</th>
-                <th>Skrytka docelowa</th>
-                <th>Rozmiar paczki</th>
-                <th>Stan</th>
-                <th>Zmień stan</th>
-              </tr>
-            </thead>
-            <tbody>
-              {packages}
-            </tbody>
-          </Table>
-        </div>
-      );
+
+      if (global.auth) {
+        return (
+          <div className="content_container">
+            <Table>
+              <thead>
+                <tr>
+                  <th>Nazwa nadawcy</th>
+                  <th>Nazwa adresata</th>
+                  <th>Skrytka docelowa</th>
+                  <th>Rozmiar paczki</th>
+                  <th>Stan</th>
+                  <th>Zmień stan</th>
+                </tr>
+              </thead>
+              <tbody>
+                {packages}
+              </tbody>
+            </Table>
+          </div>
+        );
+      }else {
+        return (
+          <div>
+            Niezalogowany
+          </div>
+        )
+      }
     }
   }
 }

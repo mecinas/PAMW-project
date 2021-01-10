@@ -3,3 +3,7 @@ Aby uruchomić klienta kuriera należy w katalogu carrier_cli wykonać komendę 
 
 heroku dla web_cli: https://fathomless-retreat-94059.herokuapp.com/
 heroku dla API: https://murmuring-springs-10121.herokuapp.com
+
+Konto na Auth0:
+email: test@gmail.com
+hasło: Qaz123123
