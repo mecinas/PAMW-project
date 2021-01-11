@@ -1,1 +1,4 @@
-.env
+web_service/.git
+web_service/.env
+carrier_cli/.env
+web/.env
