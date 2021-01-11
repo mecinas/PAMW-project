@@ -59,7 +59,7 @@ def callback_handling():
         "date": datetime.now().strftime("%d/%m/%Y %H:%M:%S")
     }
     cookie = jwt.encode(payload, JWT_SECRET, algorithm='HS256')
-    cookie = str(cookie, 'utf-8')
+    #cookie = str(cookie, 'utf-8')
 
     url = WEB_SERVICE_URL + "/root/sender/OA/createUser"
     api_response = requests.post(url=url, headers={"cookie": cookie})

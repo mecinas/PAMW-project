@@ -1,2 +1,2 @@
-# PAMW-project
-Project for my university class
+# PAMW-API
+PAMW API side of the delivary project

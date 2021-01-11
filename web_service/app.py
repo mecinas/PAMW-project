@@ -9,7 +9,7 @@ import time
 import jwt
 from uuid import uuid4
 import json
-
+#cooss
 load_dotenv()
 REDIS_HOST = getenv("REDIS_HOST")
 REDIS_PASS = getenv("REDIS_PASS")
@@ -103,7 +103,7 @@ def open_notifications():
         "links": links
     }
     is_authorized(data)
-    login = g.authorization.get("login")
+    #login = g.authorization.get("login")
 
     return document
 
@@ -133,9 +133,7 @@ def update_notifications():
 
 def is_authorized(data, cookie_name=None):
     token = request.headers.get("cookie")
-    print(token)
     try:
-        print(decode(token, JWT_SECRET, algorithms=['HS256']))
         g.authorization = decode(token, JWT_SECRET, algorithms=['HS256'])
     except Exception as e:
         return False
